@@ -36,14 +36,14 @@ public class BezierCurve : Transform
 
         lineRenderer = new LineRenderer();
     }
-    public BezierCurve(Transform s, Transform e, Transform cS, Transform cE, LineRenderer l)
+    public BezierCurve(Transform s, Transform e, Transform cS, Transform cE)
     {
         A = s.position;
         B = cS.position;
         C = cE.position;
         D = e.position;
 
-        lineRenderer = l;
+        //lineRenderer = l;
     }
     
     //Display without having to press play
@@ -67,7 +67,7 @@ public class BezierCurve : Transform
         Gizmos.DrawLine(C, D);
     }
 
-    public void MakeCurve()
+    public Vector3[] MakeCurve()
     {
         //The start position of the line
         Vector3 lastPos = A;
@@ -94,6 +94,8 @@ public class BezierCurve : Transform
             //Save this pos so we can draw the next line segment
             lastPos = newPos;
         }
+
+        return Positions;
     }
     
     //The De Casteljau's Algorithm

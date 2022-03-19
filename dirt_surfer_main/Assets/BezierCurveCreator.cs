@@ -23,122 +23,57 @@ public class BezierCurveCreator : MonoBehaviour
     public Transform[] controlPoints;
 
     //Line renderer to draw the curve
-    public LineRenderer lineRenderer;
+    public LineRenderer[] lineRenderer;
     
-    //Positions to follow
-    public Array PositionArray;
-    public Vector3[] FinalPositionArray;
-    public Vector3[] PositionTemp;
-    
-    //object to move along the line
-    public Transform test;
-    public int increment;
-
     private void Start()
     {
-        increment = 0;
-        //this.OnDrawGizmos();
-        Vector3[] position = BezierCurveCreation();
-        //configuration of the line renderer
-        
-        lineRenderer = GetComponent<LineRenderer>();
-
-        float width = 0.3f;
-        
-        lineRenderer.startColor = Color.black;
-        lineRenderer.endColor = Color.black;
-        lineRenderer.startWidth = width;
-        lineRenderer.endWidth = width;
-        lineRenderer.loop = false;
-        lineRenderer.positionCount = FinalPositionArray.Length;
-        
-        print("START");
-        for (int i = 0; i < position.Length; i++)
-        {
-
-            if ((Vector3) position.GetValue(i) != Vector3.zero)
-            {
-                print(i + " : " + position.GetValue(i));
-            }
-        }
-        print("------------------------------------------------------------");
-        print("UPDATE");
-        //Draw this line segment with line renderer
-        lineRenderer.SetPositions(FinalPositionArray);
-    }
-    
-    //Test pour valider que les positions de la ligne fonctionnent (oui!)
-    private void Update()
-    { 
-        //throw new NotImplementedException();
-        StartCoroutine("Reset");
-        
-    }
-    
-    IEnumerator Reset() {
-        if (increment < FinalPositionArray.Length)
-        {
-            test.position = FinalPositionArray[increment];
-            yield return new WaitForSeconds(4);
-            print(test.position);
-            increment++;
-        }
-    } 
-
-    public void OnDrawGizmos()
-    {
-        Vector3[] position = BezierCurveCreation();
-        //mis en commentaire pour faciliter la lecture des erreurs
-        /*for (int i = 0; i < position.Length; i++)
-        {
-            print(i + " : " + position.GetValue(i));
-        }*/
-    }
-    
-    public Vector3[] BezierCurveCreation()
-    {
-        //PositionArray = Array.CreateInstance(typeof(Vector3), 1000);
-
-        PositionTemp = new Vector3[1000];
-        
         BezierCurve curve;
+        float width = 0.3f;
+
+        //S'ASSURER QUE LE NOMBRE DE LIGNES DANS LINERENDERER ET LE NOMBRE DE POINTS DANS CONTROLPOINTS SONT COMPATIBLES
+        for (int i = 0; i < lineRenderer.Length; i++)
+        {
+            curve = new BezierCurve(controlPoints[3*i], 
+                controlPoints[3*i + 3], 
+                controlPoints[3*i + 1], 
+                controlPoints[3*i + 2]);
+            Vector3[] positions = curve.MakeCurve();
         
-        for (int i = 0; i < controlPoints.Length-3; i = i+3)
-        {
-            curve = new BezierCurve(controlPoints[i], 
-                controlPoints[i+3], 
-                controlPoints[i+1], 
-                controlPoints[i+2],
-                lineRenderer);
-            //curve.OnDrawGizmos();
-            curve.MakeCurve();
-            
-            for (int j = 0; j < curve.loops; j++)
-            {
-                
-                PositionTemp[j + 4*i] = curve.Positions[j];
-            } 
-        }
-
-        //FinalPositionArray = new Vector3[PositionArray.Length];
-        //PositionArray.CopyTo(FinalPositionArray, 0);
-
-        int l = 0;
-        for (int i = 0; i < PositionTemp.Length; i++)
-        {
-            if (PositionTemp[i] != Vector3.zero) //problème si passe par (0,0,0)
-            {
-                l++;
-            }
-        }
-
-        FinalPositionArray = new Vector3[l];
-        for (int i = 0; i < FinalPositionArray.Length; i++)
-        {
-            FinalPositionArray[i] = PositionTemp[i];
+            lineRenderer[i].startColor = Color.black;
+            lineRenderer[i].endColor = Color.black;
+            lineRenderer[i].startWidth = width;
+            lineRenderer[i].endWidth = width;
+            lineRenderer[i].loop = false;
+            lineRenderer[i].positionCount = positions.Length;
+            lineRenderer[i].SetPositions(positions);
         }
         
-        return FinalPositionArray;
+        /*curve = new BezierCurve(controlPoints[3], 
+            controlPoints[6], 
+            controlPoints[4], 
+            controlPoints[5]);
+        Vector3[] positions2 = curve.MakeCurve();
+        
+        lineRenderer[1].startColor = Color.black;
+        lineRenderer[1].endColor = Color.black;
+        lineRenderer[1].startWidth = width;
+        lineRenderer[1].endWidth = width;
+        lineRenderer[1].loop = false;
+        lineRenderer[1].positionCount = positions2.Length;
+        lineRenderer[1].SetPositions(positions2);
+        
+        curve = new BezierCurve(controlPoints[6], 
+            controlPoints[9], 
+            controlPoints[7], 
+            controlPoints[8]);
+        Vector3[] positions3 = curve.MakeCurve();
+        
+        lineRenderer[2].startColor = Color.black;
+        lineRenderer[2].endColor = Color.black;
+        lineRenderer[2].startWidth = width;
+        lineRenderer[2].endWidth = width;
+        lineRenderer[2].loop = false;
+        lineRenderer[2].positionCount = positions3.Length;
+        lineRenderer[2].SetPositions(positions3);*/
     }
-    
 }
